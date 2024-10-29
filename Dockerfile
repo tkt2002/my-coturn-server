@@ -1,11 +1,13 @@
-# Use Ubuntu as the base image
-FROM ubuntu:latest
+# Base image for Coturn
+FROM coturn/coturn:latest
 
-# Update the package list and install Coturn
-RUN apt-get update && apt-get install -y coturn
+# Set environment variables for TURN credentials
+ENV TURN_USER=${TURN_USER}
+ENV TURN_PASS=${TURN_PASS}
 
-# Copy the configuration file to the appropriate directory
+# Copy the turnserver.conf file if you have specific configurations 
+# Otherwise, Coturn will start with default configurations
 COPY turnserver.conf /etc/turnserver.conf
 
-# Run the Coturn server with the configuration file
-CMD ["turnserver", "-c", "/etc/turnserver.conf"]
+# Start Coturn with minimal options and environment variables for credentials
+CMD turnserver -a -o -v -n --user=${TURN_USER}:${TURN_PASS} --no-cli
